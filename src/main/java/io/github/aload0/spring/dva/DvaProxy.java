@@ -11,27 +11,28 @@ public class DvaProxy<T> implements FactoryBean {
 
   private final Class<T> proxyInterface;
   private final Context context;
-  private final Map<String, MethodAccessor> accessors;
   private volatile Object proxyObject;
 
   public DvaProxy(Class<T> proxyInterface, Context context) {
     this.proxyInterface = proxyInterface;
     this.context = context;
-    this.accessors = createMethodAccessors();
   }
 
   @Override
   public synchronized Object getObject() throws Exception {
     if (proxyObject == null) {
+      final Map<String, MethodAccessor> accessors = createMethodAccessors();
       proxyObject = Proxy.newProxyInstance(context.getEnvironment().getClass().getClassLoader(),
           new Class[]{proxyInterface}, (proxy, method, args) -> {
+            if (Object.class.equals(method.getDeclaringClass())) {
+              return method.invoke(this, args);
+            }
             String name = method.getName();
             if (accessors.containsKey(name)) {
               return accessors.get(name).get();
             }
             throw new RuntimeException("Cannot handle method " + name);
           });
-      ;
     }
     return proxyObject;
   }
@@ -46,7 +47,21 @@ public class DvaProxy<T> implements FactoryBean {
     return true;
   }
 
+  private ObjectReader getObjectReader() {
+    String name = context.getObjectReaderName();
+    if (name.isEmpty()) {
+      return null;
+    }
+
+    Object res = context.getBeanFactory().getBean(name);
+    if (res instanceof ObjectReader) {
+      return (ObjectReader) res;
+    }
+    throw new IllegalArgumentException("Bean " + name + " is not an ObjectReader instance");
+  }
+
   private Map<String, MethodAccessor> createMethodAccessors() {
+    final ObjectReader objectReader = getObjectReader();
     String header = context.getHeader();
     String scope = context.getNameConvention().classScope(proxyInterface);
     final String prefix = header + "." + scope + ".";
@@ -69,6 +84,11 @@ public class DvaProxy<T> implements FactoryBean {
       @Override
       public NameConvention nameConvention() {
         return context.getNameConvention();
+      }
+
+      @Override
+      public ObjectReader objectReader() {
+        return objectReader;
       }
     };
     MethodAccessorFactory factory = context.getMethodAccessorFactory();

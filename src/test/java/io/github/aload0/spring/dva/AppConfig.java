@@ -5,4 +5,10 @@ public interface AppConfig {
   String name();
 
   int port();
+
+  boolean debug();
+
+  String[] allowedUsers();
+
+  DataStore dataStore();
 }

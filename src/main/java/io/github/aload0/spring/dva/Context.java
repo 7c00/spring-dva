@@ -8,6 +8,8 @@ public interface Context {
 
   String getHeader();
 
+  String getObjectReaderName();
+
   Environment getEnvironment();
 
   BeanFactory getBeanFactory();
