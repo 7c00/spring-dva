@@ -45,9 +45,8 @@ public class DvaRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentA
 
     NameConvention nameConvention = new DvaNameConvention();
     MethodAccessorFactory methodAccessorFactory = new DvaMethodAccessorFactory();
-    Context context = new DvaContextImpl(header, objectReaderName, environment, beanFactory,
+    Context context = new DvaContext(header, objectReaderName, environment, beanFactory,
         environment, nameConvention, methodAccessorFactory);
-
     Scanner scanner = new Scanner(registry, context);
     scanner.doScan(basePackages);
   }

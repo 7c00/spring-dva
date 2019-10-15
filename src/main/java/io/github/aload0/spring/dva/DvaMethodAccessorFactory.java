@@ -35,14 +35,14 @@ public class DvaMethodAccessorFactory implements MethodAccessorFactory {
     }
 
     ObjectReader reader = context.objectReader();
-    if (reader != null && checkObjectReader(reader, type)) {
+    if (reader != null && isReadable(reader, type)) {
       return new CachedMethodAccessor(key, null, resolver, s -> reader.read(s, type));
     }
 
     throw new IllegalArgumentException(type + " is not supported");
   }
 
-  private boolean checkObjectReader(ObjectReader objectReader, Class<?> type) {
+  private boolean isReadable(ObjectReader objectReader, Class<?> type) {
     try {
       objectReader.read(null, type);
     } catch (UnsupportedOperationException e) {
