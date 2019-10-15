@@ -34,7 +34,23 @@ public class DvaMethodAccessorFactory implements MethodAccessorFactory {
       return new CachedMethodAccessor(key, null, resolver, "true"::equalsIgnoreCase);
     }
 
+    ObjectReader reader = context.objectReader();
+    if (reader != null && isReadable(reader, type)) {
+      return new CachedMethodAccessor(key, null, resolver, s -> reader.read(s, type));
+    }
+
     throw new IllegalArgumentException(type + " is not supported");
+  }
+
+  private boolean isReadable(ObjectReader objectReader, Class<?> type) {
+    try {
+      objectReader.read(null, type);
+    } catch (UnsupportedOperationException e) {
+      return false;
+    } catch (IllegalArgumentException ignored) {
+      return true;
+    }
+    return true;
   }
 
   static class CachedMethodAccessor implements MethodAccessor {

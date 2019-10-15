@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.PropertyResolver;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -21,4 +22,9 @@ public @interface EnableDva {
    * Prefix of properties.
    */
   String header() default "";
+
+  /**
+   * Name of a custom ObjectReader component.
+   */
+  String objectReaderName() default "";
 }

@@ -4,19 +4,21 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 
-public class DvaContextImpl implements Context {
+public class DvaContext implements Context {
 
   private final String header;
+  private final String objectReaderName;
   private final Environment environment;
   private final BeanFactory beanFactory;
   private final PropertyResolver propertyResolver;
   private final NameConvention nameConvention;
   private final MethodAccessorFactory methodAccessorFactory;
 
-  DvaContextImpl(String header, Environment environment, BeanFactory beanFactory,
-      PropertyResolver propertyResolver,
-      NameConvention nameConvention, MethodAccessorFactory methodAccessorFactory) {
+  DvaContext(String header, String objectReaderName, Environment environment,
+      BeanFactory beanFactory, PropertyResolver propertyResolver, NameConvention nameConvention,
+      MethodAccessorFactory methodAccessorFactory) {
     this.header = header;
+    this.objectReaderName = objectReaderName;
     this.environment = environment;
     this.beanFactory = beanFactory;
     this.propertyResolver = propertyResolver;
@@ -27,6 +29,11 @@ public class DvaContextImpl implements Context {
   @Override
   public String getHeader() {
     return header;
+  }
+
+  @Override
+  public String getObjectReaderName() {
+    return objectReaderName;
   }
 
   @Override

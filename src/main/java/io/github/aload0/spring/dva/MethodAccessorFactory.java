@@ -16,5 +16,7 @@ public interface MethodAccessorFactory {
     PropertyResolver propertyResolver();
 
     NameConvention nameConvention();
+
+    ObjectReader objectReader();
   }
 }
