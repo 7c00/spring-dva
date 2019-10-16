@@ -1,7 +1,6 @@
 package io.github.aload0.spring.dva;
 
 import java.lang.reflect.Method;
-import org.springframework.core.env.PropertyResolver;
 
 public interface MethodAccessorFactory {
 
@@ -13,7 +12,7 @@ public interface MethodAccessorFactory {
 
     String prefix();
 
-    PropertyResolver propertyResolver();
+    PropertyReader propertyReader();
 
     NameConvention nameConvention();
 

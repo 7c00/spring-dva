@@ -2,7 +2,6 @@ package io.github.aload0.spring.dva;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertyResolver;
 
 public interface Context {
 
@@ -10,11 +9,11 @@ public interface Context {
 
   String getObjectReaderName();
 
+  String getPropertyReaderName();
+
   Environment getEnvironment();
 
   BeanFactory getBeanFactory();
-
-  PropertyResolver getPropertyResolver();
 
   NameConvention getNameConvention();
 

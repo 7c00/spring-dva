@@ -24,7 +24,13 @@ public @interface EnableDva {
   String header() default "";
 
   /**
-   * Name of a custom ObjectReader component.
+   * Name to specify a custom ObjectReader Bean.
    */
   String objectReaderName() default "";
+
+  /**
+   * Name to specify a custom PropertyReader Bean.
+   * If blank, an EnvironmentPropertyReader instance is used.
+   */
+  String propertyReaderName() default "";
 }

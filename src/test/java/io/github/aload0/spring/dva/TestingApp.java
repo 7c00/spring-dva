@@ -4,7 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@EnableDva(basePackages = "io.github.aload0.spring.dva", header = "dva", objectReaderName = "testingObjectReader")
+@EnableDva(basePackages = "io.github.aload0.spring.dva", header = "dva",
+    objectReaderName = "testingObjectReader", propertyReaderName = "localFile")
 public class TestingApp {
 
   public static void main(String[] args) {
