@@ -30,7 +30,7 @@ public @interface EnableDva {
 
   /**
    * Name to specify a custom PropertyReader Bean.
-   * If blank, an EnvironmentPropertyReader instance is used.
+   * If blank, {@code DefaultPropertyReader} is used.
    */
   String propertyReaderName() default "";
 }

@@ -12,7 +12,7 @@ public class TestingConfiguration {
   static final long INTERVAL_MILLIS = 20;
 
   @Bean("localFile")
-  public PropertyReader appFilePropertyReader() {
+  public PropertyReader localFilePropertyReader() {
     try {
       return new BasicFilePropertyReader(new File(LOCAL_FILE), INTERVAL_MILLIS);
     } catch (IOException e) {

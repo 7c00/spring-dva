@@ -24,7 +24,9 @@ public class BasicFilePropertyReader implements PropertyReader {
   private final File file;
 
   /**
-   * Create a new {@code PropertyReader } that reloads the file in every intervalMillis.
+   * Create a new {@code BasicFilePropertyReader} that reads properties from file.
+   *
+   * BasicFilePropertyReader reads file when creating or reading after intervalMillis.
    */
   public BasicFilePropertyReader(File file, long intervalMillis) throws IOException {
     requireNonNull(file);
