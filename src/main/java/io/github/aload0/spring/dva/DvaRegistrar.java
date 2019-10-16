@@ -42,11 +42,12 @@ public class DvaRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentA
     String[] basePackages = attrs.getStringArray("basePackages");
     String header = attrs.getString("header");
     String objectReaderName = attrs.getString("objectReaderName");
+    String propertyReaderName = attrs.getString("propertyReaderName");
 
     NameConvention nameConvention = new DvaNameConvention();
     MethodAccessorFactory methodAccessorFactory = new DvaMethodAccessorFactory();
     Context context = new DvaContext(header, objectReaderName, environment, beanFactory,
-        environment, nameConvention, methodAccessorFactory);
+        propertyReaderName, nameConvention, methodAccessorFactory);
     Scanner scanner = new Scanner(registry, context);
     scanner.doScan(basePackages);
   }

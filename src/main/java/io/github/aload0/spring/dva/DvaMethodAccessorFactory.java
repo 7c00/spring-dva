@@ -2,7 +2,6 @@ package io.github.aload0.spring.dva;
 
 import java.lang.reflect.Method;
 import java.util.function.Function;
-import org.springframework.core.env.PropertyResolver;
 import org.springframework.util.StringUtils;
 
 public class DvaMethodAccessorFactory implements MethodAccessorFactory {
@@ -12,7 +11,7 @@ public class DvaMethodAccessorFactory implements MethodAccessorFactory {
       throws IllegalArgumentException {
     String key = context.prefix() + context.nameConvention().method(method);
     Class<?> type = method.getReturnType();
-    PropertyResolver resolver = context.propertyResolver();
+    PropertyReader resolver = context.propertyReader();
 
     if (type.equals(String.class)) {
       return new CachedMethodAccessor(key, null, resolver, s -> s);
@@ -23,15 +22,15 @@ public class DvaMethodAccessorFactory implements MethodAccessorFactory {
             StringUtils::commaDelimitedListToStringArray);
       }
     } else if (type.equals(int.class) || type.equals(Integer.class)) {
-      return new CachedMethodAccessor(key, null, resolver, Integer::parseInt);
+      return new CachedMethodAccessor(key, "0", resolver, Integer::parseInt);
     } else if (type.equals(long.class) || type.equals(Long.class)) {
-      return new CachedMethodAccessor(key, null, resolver, Long::parseLong);
+      return new CachedMethodAccessor(key, "0", resolver, Long::parseLong);
     } else if (type.equals(float.class) || type.equals(Float.class)) {
-      return new CachedMethodAccessor(key, null, resolver, Float::parseFloat);
+      return new CachedMethodAccessor(key, "0", resolver, Float::parseFloat);
     } else if (type.equals(double.class) || type.equals(Double.class)) {
-      return new CachedMethodAccessor(key, null, resolver, Double::parseDouble);
+      return new CachedMethodAccessor(key, "0", resolver, Double::parseDouble);
     } else if (type.equals(boolean.class) || type.equals(Boolean.class)) {
-      return new CachedMethodAccessor(key, null, resolver, "true"::equalsIgnoreCase);
+      return new CachedMethodAccessor(key, "false", resolver, "true"::equalsIgnoreCase);
     }
 
     ObjectReader reader = context.objectReader();
@@ -57,22 +56,22 @@ public class DvaMethodAccessorFactory implements MethodAccessorFactory {
 
     private final String key;
     private final String defaultValue;
-    private final PropertyResolver propertyResolver;
+    private final PropertyReader propertyReader;
     private final Function<String, Object> parser;
     private final ThreadLocal<String> value = new ThreadLocal<>();
     private final ThreadLocal<Object> parsed = new ThreadLocal<>();
 
-    CachedMethodAccessor(String key, String defaultValue, PropertyResolver propertyResolver,
+    CachedMethodAccessor(String key, String defaultValue, PropertyReader propertyReader,
         Function<String, Object> parser) {
       this.key = key;
       this.defaultValue = defaultValue;
-      this.propertyResolver = propertyResolver;
+      this.propertyReader = propertyReader;
       this.parser = parser;
     }
 
     @Override
     public Object get() {
-      String latest = propertyResolver.getProperty(key, defaultValue);
+      String latest = propertyReader.getProperty(key, defaultValue);
       if (value.get() == null || !value.get().equals(latest)) {
         value.set(latest);
         parsed.set(latest == null ? null : parser.apply(latest));

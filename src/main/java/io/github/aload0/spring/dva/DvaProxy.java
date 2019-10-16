@@ -5,7 +5,7 @@ import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.core.env.PropertyResolver;
+import org.springframework.util.StringUtils;
 
 public class DvaProxy<T> implements FactoryBean {
 
@@ -49,22 +49,27 @@ public class DvaProxy<T> implements FactoryBean {
 
   private ObjectReader getObjectReader() {
     String name = context.getObjectReaderName();
-    if (name.isEmpty()) {
+    if (StringUtils.isEmpty(name)) {
       return null;
     }
+    return context.getBeanFactory().getBean(name, ObjectReader.class);
+  }
 
-    Object res = context.getBeanFactory().getBean(name);
-    if (res instanceof ObjectReader) {
-      return (ObjectReader) res;
+  private PropertyReader getPropertyReader() {
+    String name = context.getPropertyReaderName();
+    if (StringUtils.isEmpty(name)) {
+      return new DefaultPropertyReader(context.getEnvironment());
     }
-    throw new IllegalArgumentException("Bean " + name + " is not an ObjectReader instance");
+    return context.getBeanFactory().getBean(name, PropertyReader.class);
   }
 
   private Map<String, MethodAccessor> createMethodAccessors() {
     final ObjectReader objectReader = getObjectReader();
+    final PropertyReader propertyReader = getPropertyReader();
     String header = context.getHeader();
     String scope = context.getNameConvention().classScope(proxyInterface);
     final String prefix = header + "." + scope + ".";
+
     MethodAccessorFactory.Context ctx = new MethodAccessorFactory.Context() {
       @Override
       public Class<?> clazz() {
@@ -77,8 +82,8 @@ public class DvaProxy<T> implements FactoryBean {
       }
 
       @Override
-      public PropertyResolver propertyResolver() {
-        return context.getPropertyResolver();
+      public PropertyReader propertyReader() {
+        return propertyReader;
       }
 
       @Override
