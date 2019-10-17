@@ -29,8 +29,19 @@ public @interface EnableDva {
   String objectReaderName() default "";
 
   /**
-   * Name to specify a custom PropertyReader Bean.
-   * If blank, {@code DefaultPropertyReader} is used.
+   * Name to specify a custom PropertyReader Bean. If blank, {@code DefaultPropertyReader} is used.
    */
   String propertyReaderName() default "";
+
+  /**
+   * Class to specify a {@code NameConvention} implementation. Default is {@code
+   * DvaNameConvention}.
+   */
+  Class<? extends NameConvention> nameConvention() default DvaNameConvention.class;
+
+  /**
+   * Class to specify a {@code MethodAccessorFactory} implementation. Default is {@code
+   * DvaMethodAccessorFactory}.
+   */
+  Class<? extends MethodAccessorFactory> methodAccessorFactory() default DvaMethodAccessorFactory.class;
 }

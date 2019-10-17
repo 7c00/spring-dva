@@ -1,5 +1,6 @@
 package io.github.aload0.spring.dva;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Set;
 import org.springframework.beans.BeansException;
@@ -39,17 +40,32 @@ public class DvaRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentA
     // Handle EnableDva annotation
     AnnotationAttributes attrs = AnnotationAttributes
         .fromMap(meta.getAnnotationAttributes(EnableDva.class.getName()));
+
     String[] basePackages = attrs.getStringArray("basePackages");
     String header = attrs.getString("header");
     String objectReaderName = attrs.getString("objectReaderName");
     String propertyReaderName = attrs.getString("propertyReaderName");
+    NameConvention nameConvention = getImplement(attrs, "nameConvention", NameConvention.class);
+    MethodAccessorFactory methodAccessorFactory = getImplement(attrs, "methodAccessorFactory",
+        MethodAccessorFactory.class);
 
-    NameConvention nameConvention = new DvaNameConvention();
-    MethodAccessorFactory methodAccessorFactory = new DvaMethodAccessorFactory();
     Context context = new DvaContext(header, objectReaderName, environment, beanFactory,
         propertyReaderName, nameConvention, methodAccessorFactory);
     Scanner scanner = new Scanner(registry, context);
     scanner.doScan(basePackages);
+  }
+
+  private static <T> T getImplement(AnnotationAttributes attrs, String name, Class<T> type) {
+    Class<?> cls = attrs.getClass(name);
+    if (!type.isAssignableFrom(cls)) {
+      throw new IllegalArgumentException(cls + " not implement " + type);
+    }
+    @SuppressWarnings("unchecked") Class<T> t = (Class<T>) cls;
+    try {
+      return t.getConstructor().newInstance();
+    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+      throw new RuntimeException("Can't instantiate " + cls, e);
+    }
   }
 
   private class Scanner extends ClassPathBeanDefinitionScanner {
@@ -88,5 +104,4 @@ public class DvaRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentA
           && context.getNameConvention().accept(beanDefinition.getMetadata().getClassName());
     }
   }
-
 }
